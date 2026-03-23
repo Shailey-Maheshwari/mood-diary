@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mood Diary 🌷</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffd6e0, #e0c3fc);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }h1 {
+  margin-bottom: 10px;
+}
+
+.container {
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  width: 320px;
+  text-align: center;
+}
+
+.moods button {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #ff8fab;
+  color: white;
+  transition: 0.3s;
+}
+
+.moods button:hover {
+  background: #ff5d8f;
+  transform: scale(1.05);
+}
+
+canvas {
+  margin-top: 20px;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Mood Diary 🌷</h1>
+  <div class="container">
+    <p>How are you feeling today?</p>
+    <div class="moods">
+      <button onclick="saveMood('Happy 😊')">Happy</button>
+      <button onclick="saveMood('Sad 😢')">Sad</button>
+      <button onclick="saveMood('Anxious 😰')">Anxious</button>
+      <button onclick="saveMood('Delulu 💅')">Delulu</button>
+    </div>
+    <canvas id="chart" width="300" height="200"></canvas>
+  </div>  <script>
+    const moodData = JSON.parse(localStorage.getItem('moods')) || [];
+
+    function saveMood(mood) {
+      const today = new Date().toLocaleDateString();
+      moodData.push({ date: today, mood });
+      localStorage.setItem('moods', JSON.stringify(moodData));
+      renderChart();
+    }
+
+    function renderChart() {
+      const moodCount = {};
+
+      moodData.forEach(entry => {
+        moodCount[entry.mood] = (moodCount[entry.mood] || 0) + 1;
+      });
+
+      const labels = Object.keys(moodCount);
+      const data = Object.values(moodCount);
+
+      const ctx = document.getElementById('chart').getContext('2d');
+
+      if (window.chart) {
+        window.chart.destroy();
+      }
+
+      window.chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Mood Count',
+            data: data
+          }]
+        }
+      });
+    }
+
+    renderChart();
+  </script></body>
+</html>
